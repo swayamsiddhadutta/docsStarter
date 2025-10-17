@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "title": "Business API",
+    "description": "API for managing business entities, KYB (Know Your Business) processes, and business verification",
     "license": {
       "name": "MIT"
     },
@@ -19,72 +19,33 @@
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/business": {
       "post": {
-        "description": "Creates a new plant in the store",
+        "description": "Creates a new business entity",
         "requestBody": {
-          "description": "Plant to add to the store",
+          "description": "Business information to create",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/NewBusiness"
               }
             }
           },
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "plant response",
+          "201": {
+            "description": "Business created successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/Business"
                 }
               }
             }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Invalid request data",
             "content": {
               "application/json": {
                 "schema": {
@@ -96,28 +57,232 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/business/{id}": {
+      "get": {
+        "description": "Retrieves a business by its ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "ID of plant to delete",
+            "description": "Business ID",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
+          "200": {
+            "description": "Business details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Business"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Business not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Updates an existing business",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Business ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated business information",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Business updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Business"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Business not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/business/email": {
+      "post": {
+        "description": "Retrieves a business by email address",
+        "requestBody": {
+          "description": "Email address to search for",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailSearch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Business found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Business"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Business not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/business/verify-email": {
+      "post": {
+        "description": "Verifies a business email address",
+        "requestBody": {
+          "description": "Email verification request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerification"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Email verification initiated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResponse"
+                }
+              }
+            }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Invalid email or business",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/business/kyb/start": {
+      "post": {
+        "description": "Starts the KYB (Know Your Business) process",
+        "requestBody": {
+          "description": "KYB initiation request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KYBStart"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "KYB process started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid business or KYB already in progress",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/business/kyb/status": {
+      "get": {
+        "description": "Gets the current KYB status for a business",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "query",
+            "description": "Business ID to check KYB status for",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "KYB status retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Business not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -131,22 +296,102 @@
     }
   },
   "webhooks": {
-    "/plant/webhook": {
+    "/webhooks/business-created": {
       "post": {
-        "description": "Information about a new plant added to the store",
+        "description": "Webhook triggered when a new business is created",
         "requestBody": {
-          "description": "Plant added to the store",
+          "description": "Business creation event data",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/BusinessWebhookEvent"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+            "description": "Webhook received successfully"
+          }
+        }
+      }
+    },
+    "/webhooks/business-updated": {
+      "post": {
+        "description": "Webhook triggered when a business is updated",
+        "requestBody": {
+          "description": "Business update event data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessWebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook received successfully"
+          }
+        }
+      }
+    },
+    "/webhooks/kyb-started": {
+      "post": {
+        "description": "Webhook triggered when KYB process is started",
+        "requestBody": {
+          "description": "KYB start event data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KYBWebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook received successfully"
+          }
+        }
+      }
+    },
+    "/webhooks/kyb-completed": {
+      "post": {
+        "description": "Webhook triggered when KYB process is completed",
+        "requestBody": {
+          "description": "KYB completion event data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KYBWebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook received successfully"
+          }
+        }
+      }
+    },
+    "/webhooks/email-verified": {
+      "post": {
+        "description": "Webhook triggered when business email is verified",
+        "requestBody": {
+          "description": "Email verification event data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerificationWebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook received successfully"
           }
         }
       }
@@ -154,41 +399,214 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
+      "Business": {
         "required": [
-          "name"
+          "id",
+          "name",
+          "email",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique business identifier",
+            "type": "string"
+          },
+          "name": {
+            "description": "Business name",
+            "type": "string"
+          },
+          "email": {
+            "description": "Business email address",
+            "type": "string",
+            "format": "email"
+          },
+          "status": {
+            "description": "Business status",
+            "type": "string",
+            "enum": ["active", "pending", "suspended", "verified"]
+          },
+          "created_at": {
+            "description": "Business creation timestamp",
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "description": "Last update timestamp",
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "NewBusiness": {
+        "required": [
+          "name",
+          "email"
         ],
         "type": "object",
         "properties": {
           "name": {
-            "description": "The name of the plant",
+            "description": "Business name",
             "type": "string"
           },
-          "tag": {
-            "description": "Tag to specify the type",
+          "email": {
+            "description": "Business email address",
+            "type": "string",
+            "format": "email"
+          },
+          "description": {
+            "description": "Business description",
             "type": "string"
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+      "BusinessUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Updated business name",
+            "type": "string"
           },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
+          "email": {
+            "description": "Updated business email",
+            "type": "string",
+            "format": "email"
+          },
+          "description": {
+            "description": "Updated business description",
+            "type": "string"
+          }
+        }
+      },
+      "EmailSearch": {
+        "required": [
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "description": "Email address to search for",
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "EmailVerification": {
+        "required": [
+          "business_id",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "description": "Business ID to verify email for",
+            "type": "string"
+          },
+          "email": {
+            "description": "Email address to verify",
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "VerificationResponse": {
+        "required": [
+          "verification_id",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "verification_id": {
+            "description": "Unique verification ID",
+            "type": "string"
+          },
+          "status": {
+            "description": "Verification status",
+            "type": "string",
+            "enum": ["pending", "sent", "verified", "failed"]
+          },
+          "expires_at": {
+            "description": "Verification expiration time",
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "KYBStart": {
+        "required": [
+          "business_id"
+        ],
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "description": "Business ID to start KYB for",
+            "type": "string"
+          },
+          "documents_required": {
+            "description": "List of required documents",
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           }
-        ]
+        }
+      },
+      "KYBResponse": {
+        "required": [
+          "kyb_id",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "kyb_id": {
+            "description": "Unique KYB process ID",
+            "type": "string"
+          },
+          "status": {
+            "description": "KYB process status",
+            "type": "string",
+            "enum": ["initiated", "in_progress", "pending_review", "approved", "rejected"]
+          },
+          "required_documents": {
+            "description": "List of required documents",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "KYBStatus": {
+        "required": [
+          "status",
+          "progress"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "Current KYB status",
+            "type": "string",
+            "enum": ["not_started", "in_progress", "pending_review", "approved", "rejected"]
+          },
+          "progress": {
+            "description": "Completion percentage",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "last_updated": {
+            "description": "Last status update timestamp",
+            "type": "string",
+            "format": "date-time"
+          },
+          "next_steps": {
+            "description": "Next required actions",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       },
       "Error": {
         "required": [
@@ -203,6 +621,102 @@
           },
           "message": {
             "type": "string"
+          }
+        }
+      },
+      "BusinessWebhookEvent": {
+        "required": [
+          "event_type",
+          "business_id",
+          "timestamp"
+        ],
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "description": "Type of webhook event",
+            "type": "string",
+            "enum": ["business.created", "business.updated"]
+          },
+          "business_id": {
+            "description": "ID of the business",
+            "type": "string"
+          },
+          "timestamp": {
+            "description": "Event timestamp",
+            "type": "string",
+            "format": "date-time"
+          },
+          "business": {
+            "description": "Business data",
+            "$ref": "#/components/schemas/Business"
+          }
+        }
+      },
+      "KYBWebhookEvent": {
+        "required": [
+          "event_type",
+          "business_id",
+          "kyb_id",
+          "timestamp"
+        ],
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "description": "Type of KYB webhook event",
+            "type": "string",
+            "enum": ["kyb.started", "kyb.completed", "kyb.failed"]
+          },
+          "business_id": {
+            "description": "ID of the business",
+            "type": "string"
+          },
+          "kyb_id": {
+            "description": "ID of the KYB process",
+            "type": "string"
+          },
+          "timestamp": {
+            "description": "Event timestamp",
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "description": "KYB status",
+            "type": "string",
+            "enum": ["initiated", "in_progress", "pending_review", "approved", "rejected"]
+          }
+        }
+      },
+      "EmailVerificationWebhookEvent": {
+        "required": [
+          "event_type",
+          "business_id",
+          "verification_id",
+          "timestamp"
+        ],
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "description": "Type of email verification event",
+            "type": "string",
+            "enum": ["email.verified", "email.verification_failed"]
+          },
+          "business_id": {
+            "description": "ID of the business",
+            "type": "string"
+          },
+          "verification_id": {
+            "description": "ID of the verification process",
+            "type": "string"
+          },
+          "email": {
+            "description": "Email address that was verified",
+            "type": "string",
+            "format": "email"
+          },
+          "timestamp": {
+            "description": "Event timestamp",
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

@@ -1,24 +1,40 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'KYB API Introduction'
+description: 'Business onboarding and KYB (Know Your Business) API documentation'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Business Onboarding Overview
 
-## Welcome
+Business onboarding is similar to consumer onboarding in that an identity - a legal entity in this case - passes verification - KYB (Know Your Business) in this case - completes onboarding via the SumSub SDK implemented inside your application. Please refer to the "KYC/KYB SDK" section to learn more about this.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+To avoid repetition, please refer to the onboarding flow for consumers here. This is practically the same except the email and phone number being verified are that of the "Primary User" of the business, the registered director of the company.
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+As above, email verification may be handled by your application, please ensure to discuss this with your account manager at Striga if of interest.
+
+## Required Information
+
+To initiate the creation of a business account, the following information is collected through your user interface and transmitted to Striga via the APIs in the following section:
+
+### Company Details
+- Name
+- Incorporation Address
+- Registration Number
+- Incorporation Date
+- Type of Entity
+- Registration Country
+
+<Info>
+Registration country can only be one supported EU countries: Austria, Belgium, Bulgaria, Croatia, Cyprus, Czech Republic, Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Iceland, Ireland, Italy, Latvia, Liechtenstein, Lithuania, Luxembourg, Malta, Netherlands, Norway, Poland, Portugal, Romania, Slovakia, Slovenia, Spain, Sweden.
+</Info>
+
+### Primary User Information
+- **First and last name** (This must be a registered director)
+- **Email** - Email sent using your template from an email address configured by you on Striga
+- **Phone number**
+
+## KYB Process
+
+Once the above data has been collected, a business may start "KYB" using the SumSub SDK and obtaining a token from the "Start KYB" API endpoint.
 
 ## Authentication
 
